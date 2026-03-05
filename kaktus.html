@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LOCALI — Kaktus 20% Off</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar f1">
+    <div class="logo">LOC<span>A</span>LI</div>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <span class="step-tag" data-i18n="step.tag.kaktus"></span>
+      <button class="lang-toggle" title="Switch language">DE</button>
+    </div>
+  </div>
+
+  <div class="progress f2">
+    <div class="dot-step done"></div><div class="dot-step done"></div>
+    <div class="dot-step done"></div><div class="dot-step active"></div><div class="dot-step"></div>
+  </div>
+
+  <div id="gateWarn" class="hidden">
+    <div class="alert alert-err f2">
+      <span data-i18n="kaktus.gate.err"></span>
+      <a href="role.html" style="color:var(--red);display:block;margin-top:.35rem;" data-i18n="kaktus.gate.link"></a>
+    </div>
+  </div>
+
+  <div id="mainContent" class="hidden">
+    <div id="rolePillWrap" class="f1"></div>
+
+    <div id="codeSection">
+      <div class="hero f2">
+        <div class="hero-label" data-i18n="kaktus.hero.label"></div>
+        <h1 data-i18n="kaktus.hero.h1"></h1>
+        <p data-i18n="kaktus.hero.p"></p>
+      </div>
+
+      <div class="alert alert-info f3" data-i18n="kaktus.info"></div>
+
+      <a href="https://share.google/J2fruJExUS1heH3Sg" target="_blank" class="map-btn f3" data-i18n="maps.kaktus"></a>
+
+      <div class="field f3">
+        <label for="codeInput" data-i18n="kaktus.code.label"></label>
+        <input type="text" id="codeInput"
+          data-i18n-placeholder="kaktus.code.ph"
+          autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
+        <div class="field-hint" data-i18n="kaktus.code.hint"></div>
+      </div>
+
+      <div id="codeErr" class="alert alert-err hidden"></div>
+      <button class="btn f4" id="unlockBtn" data-i18n="kaktus.cta" onclick="unlockVoucher()"></button>
+
+      <div class="alert alert-info f5" data-i18n="kaktus.tip"></div>
+    </div>
+
+    <div id="voucherSection" class="hidden">
+      <div class="divider f1" data-i18n="kaktus.divider"></div>
+
+      <div class="voucher f1">
+        <div class="v-lbl" data-i18n="kaktus.v.lbl1"></div>
+        <div class="v-pct">20<span style="font-size:2rem">%</span></div>
+        <div class="v-lbl" data-i18n="kaktus.v.lbl2"></div>
+        <div class="v-name">🌮 Kaktus Mexican Food</div>
+        <div class="v-team" id="vHandle"></div>
+        <div class="v-once" data-i18n="kaktus.v.once"></div>
+      </div>
+
+      <div id="redeemBlock" class="f2">
+        <div class="alert alert-info" data-i18n="kaktus.redeem.info"></div>
+        <button class="btn btn-gold" id="redeemBtn" onclick="markRedeemed()" data-i18n="kaktus.redeem.btn"></button>
+      </div>
+      <div id="redeemedMsg" class="alert alert-ok hidden f2" data-i18n="kaktus.redeem.ok"></div>
+
+      <div class="spacer"></div>
+
+      <div class="card c-red f3" data-i18n-tag="kaktus.hunt.tag">
+        <h3 data-i18n="kaktus.hunt.h3"></h3>
+        <p data-i18n="kaktus.hunt.p"></p>
+      </div>
+
+      <a href="waiting.html" class="btn btn-ghost f4" data-i18n="nav.back.waiting"></a>
+    </div>
+  </div>
+
+  <div class="foot" data-i18n="foot.kaktus"></div>
+</div>
+
+<script src="game.js"></script>
+<script>
+  const handle = G.get(G.K.HANDLE);
+  const role   = G.get(G.K.ROLE);
+
+  G.initLangToggle();
+
+  if (!handle || !role) {
+    document.getElementById('gateWarn').classList.remove('hidden');
+  } else {
+    document.getElementById('mainContent').classList.remove('hidden');
+    document.getElementById('rolePillWrap').innerHTML =
+      `<div class="role-pill ${role.toLowerCase()}">${G.t(role==='A'?'role.a.label':'role.b.label')}</div>`;
+    if (G.get(G.K.KAKTUS_DONE)==='yes') showVoucher();
+  }
+
+  function unlockVoucher() {
+    const val = document.getElementById('codeInput').value.trim().toUpperCase().replace(/\s/g,'');
+    const err = document.getElementById('codeErr');
+    if (val !== G.KAKTUS_CODE.toUpperCase()) {
+      err.textContent = G.t('kaktus.code.err');
+      err.classList.remove('hidden');
+      const inp = document.getElementById('codeInput');
+      inp.className = 'err';
+      setTimeout(() => { inp.className = ''; }, 1800);
+      return;
+    }
+    err.classList.add('hidden');
+    G.set(G.K.KAKTUS_DONE, 'yes');
+    G.postForm('KAKTUS', { [G.FORMS.KAKTUS.PLAYER]:handle, [G.FORMS.KAKTUS.TIMESTAMP]:G.now() });
+    showVoucher();
+  }
+
+  function showVoucher() {
+    document.getElementById('codeSection').classList.add('hidden');
+    document.getElementById('voucherSection').classList.remove('hidden');
+    document.getElementById('vHandle').textContent = '@' + handle;
+    if (localStorage.getItem('lc_kaktus_redeemed')==='yes') {
+      document.getElementById('redeemBlock').classList.add('hidden');
+      document.getElementById('redeemedMsg').classList.remove('hidden');
+    }
+  }
+
+  function markRedeemed() {
+    if (!confirm(G.t('kaktus.redeem.confirm'))) return;
+    localStorage.setItem('lc_kaktus_redeemed', 'yes');
+    document.getElementById('redeemBlock').classList.add('hidden');
+    document.getElementById('redeemedMsg').classList.remove('hidden');
+  }
+
+  document.getElementById('codeInput') && document.getElementById('codeInput').addEventListener('keydown', e => {
+    if (e.key==='Enter') unlockVoucher();
+  });
+</script>
+</body>
+</html>

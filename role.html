@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LOCALI — Choose Your Role</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar f1">
+    <div class="logo">LOC<span>A</span>LI</div>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <span class="step-tag" data-i18n="step.tag.1"></span>
+      <button class="lang-toggle" title="Switch language">DE</button>
+    </div>
+  </div>
+
+  <div class="progress f2">
+    <div class="dot-step done"></div><div class="dot-step active"></div>
+    <div class="dot-step"></div><div class="dot-step"></div><div class="dot-step"></div>
+  </div>
+
+  <div class="hero f2">
+    <div class="hero-label" data-i18n="role.hero.label"></div>
+    <h1 data-i18n="role.hero.h1"></h1>
+    <p data-i18n="role.hero.p"></p>
+  </div>
+
+  <div class="role-grid f3">
+    <div class="role-card" id="cardA" onclick="selectRole('A')">
+      <div class="role-letter">A</div>
+      <h4 data-i18n="role.a.title"></h4>
+      <p data-i18n="role.a.desc"></p>
+    </div>
+    <div class="role-card" id="cardB" onclick="selectRole('B')">
+      <div class="role-letter">B</div>
+      <h4 data-i18n="role.b.title"></h4>
+      <p data-i18n="role.b.desc"></p>
+    </div>
+  </div>
+  <div id="roleErr" class="alert alert-err hidden f3" data-i18n="role.err.pick"></div>
+
+  <div class="card f4" data-i18n-tag="role.identity.tag">
+    <h3 data-i18n="role.identity.h3"></h3>
+    <p data-i18n="role.identity.p"></p>
+  </div>
+
+  <div class="field f4">
+    <label for="handleInput" data-i18n="role.handle.label"></label>
+    <input type="text" id="handleInput"
+      data-i18n-placeholder="role.handle.ph"
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+      oninput="validateHandle()" />
+    <div class="field-hint" id="handleHint" data-i18n="role.handle.hint"></div>
+  </div>
+
+  <div id="reviewBlock" class="card c-blue f4 hidden" data-i18n-tag="role.confirm.tag">
+    <h3 data-i18n="role.confirm.h3"></h3>
+    <table style="width:100%;font-size:.75rem;border-collapse:collapse;margin-top:.35rem;">
+      <tr>
+        <td style="color:var(--muted);padding:.3rem 0;width:40%;" data-i18n="role.confirm.row.role"></td>
+        <td id="reviewRole" style="color:var(--text);font-weight:600;"></td>
+      </tr>
+      <tr>
+        <td style="color:var(--muted);padding:.3rem 0;" data-i18n="role.confirm.row.handle"></td>
+        <td id="reviewHandle" style="color:var(--text);font-family:var(--mono);"></td>
+      </tr>
+    </table>
+    <button class="btn btn-ghost" style="margin-top:.85rem;width:auto;padding:.45rem .9rem;font-size:.68rem;" onclick="resetChoices()" data-i18n="role.confirm.change"></button>
+  </div>
+
+  <div id="formErr" class="alert alert-err hidden"></div>
+  <button class="btn f5" id="continueBtn" onclick="proceed()" data-i18n="role.cta"></button>
+  <div class="foot f6" data-i18n="foot.role"></div>
+</div>
+
+<script src="game.js"></script>
+<script>
+  G.initLangToggle();
+
+  let selectedRole = null;
+  let handleValid  = false;
+
+  const savedRole   = G.get(G.K.ROLE);
+  const savedHandle = G.get(G.K.HANDLE);
+  if (savedRole)   { selectRole(savedRole, true); }
+  if (savedHandle) { document.getElementById('handleInput').value = savedHandle; validateHandle(); }
+
+  function selectRole(r, silent) {
+    selectedRole = r;
+    document.getElementById('cardA').className = 'role-card' + (r==='A'?' selected-a':'');
+    document.getElementById('cardB').className = 'role-card' + (r==='B'?' selected-b':'');
+    document.getElementById('roleErr').classList.add('hidden');
+    if (!silent) updateReview();
+  }
+
+  function validateHandle() {
+    const raw  = document.getElementById('handleInput').value;
+    const hint = document.getElementById('handleHint');
+    const inp  = document.getElementById('handleInput');
+    if (raw.length === 0) {
+      hint.textContent = G.t('role.handle.hint');
+      hint.className = 'field-hint'; inp.className = ''; handleValid = false; return;
+    }
+    const clean = G.cleanHandle(raw);
+    if (G.validHandle(raw)) {
+      hint.textContent = '✓ @' + clean + ' ' + G.t('role.handle.ok');
+      hint.className = 'field-hint ok'; inp.className = 'ok'; handleValid = true;
+    } else {
+      hint.textContent = G.t('role.handle.err');
+      hint.className = 'field-hint err'; inp.className = 'err'; handleValid = false;
+    }
+    updateReview();
+  }
+
+  function updateReview() {
+    if (!selectedRole || !handleValid) return;
+    const handle = G.cleanHandle(document.getElementById('handleInput').value);
+    document.getElementById('reviewRole').textContent   = G.t(selectedRole==='A'?'role.a.full':'role.b.full');
+    document.getElementById('reviewHandle').textContent = '@' + handle;
+    document.getElementById('reviewBlock').classList.remove('hidden');
+  }
+
+  function resetChoices() {
+    selectedRole = null; handleValid = false;
+    document.getElementById('cardA').className = 'role-card';
+    document.getElementById('cardB').className = 'role-card';
+    document.getElementById('handleInput').value = '';
+    document.getElementById('handleHint').textContent = G.t('role.handle.hint');
+    document.getElementById('handleHint').className   = 'field-hint';
+    document.getElementById('handleInput').className  = '';
+    document.getElementById('reviewBlock').classList.add('hidden');
+    document.getElementById('formErr').classList.add('hidden');
+  }
+
+  function proceed() {
+    const err = document.getElementById('formErr');
+    err.classList.add('hidden');
+    if (!selectedRole) {
+      document.getElementById('roleErr').classList.remove('hidden');
+      document.getElementById('roleErr').scrollIntoView({behavior:'smooth'}); return;
+    }
+    if (!handleValid) {
+      err.textContent = G.t('role.err.handle'); err.classList.remove('hidden'); return;
+    }
+    const handle = G.cleanHandle(document.getElementById('handleInput').value);
+    G.set(G.K.ROLE, selectedRole);
+    G.set(G.K.HANDLE, handle);
+    window.location.href = 'team.html';
+  }
+
+  document.getElementById('handleInput').addEventListener('keydown', e => { if(e.key==='Enter') proceed(); });
+</script>
+</body>
+</html>

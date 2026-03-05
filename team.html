@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LOCALI — Find Your Partner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+
+  <div class="topbar f1">
+    <div class="logo">LOC<span>A</span>LI</div>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <span class="step-tag" data-i18n="step.tag.2"></span>
+      <button class="lang-toggle" title="Switch language">DE</button>
+    </div>
+  </div>
+
+  <div class="progress f2">
+    <div class="dot-step done"></div><div class="dot-step done"></div>
+    <div class="dot-step active"></div><div class="dot-step"></div><div class="dot-step"></div>
+  </div>
+
+  <div id="gateWarn" class="hidden">
+    <div class="alert alert-err f2">
+      <span data-i18n="hunt.gate.err"></span>
+      <a href="role.html" style="color:var(--red);display:block;margin-top:.35rem;" data-i18n="nav.back.start"></a>
+    </div>
+  </div>
+
+  <div id="mainContent" class="hidden">
+    <div id="rolePillWrap" class="f1"></div>
+
+    <div class="hero f2">
+      <div class="hero-label" data-i18n="team.hero.label"></div>
+      <h1 data-i18n="team.hero.h1"></h1>
+    </div>
+
+    <div id="igSection">
+      <div class="card c-red f2" data-i18n-tag="team.ig.tag">
+        <h3 data-i18n="team.ig.h3"></h3>
+        <p data-i18n="team.ig.p"></p>
+      </div>
+
+      <div id="commentBox" class="f3" style="border:1px solid var(--line2);background:var(--surf2);padding:1rem 1.1rem;margin-bottom:.8rem;">
+        <div style="font-size:.5rem;letter-spacing:.32em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem;" data-i18n="team.comment.label"></div>
+        <div id="commentText" style="font-family:var(--syne);font-size:1.05rem;font-weight:700;color:var(--text);line-height:1.5;"></div>
+      </div>
+
+      <a id="igPostBtn" href="#" target="_blank" class="btn btn-ghost f3" style="margin-bottom:.8rem;" data-i18n="team.ig.btn"></a>
+
+      <div class="card f3" data-i18n-tag="team.find.tag">
+        <h3 data-i18n="team.find.h3"></h3>
+        <ul>
+          <li data-i18n="team.find.li1"></li>
+          <li data-i18n="team.find.li2"></li>
+          <li data-i18n="team.find.li3"></li>
+          <li data-i18n="team.find.li4"></li>
+        </ul>
+      </div>
+
+      <div class="divider f4" data-i18n="team.divider"></div>
+
+      <div class="card f4" data-i18n-tag="team.register.tag">
+        <h3 data-i18n="team.register.h3"></h3>
+        <p data-i18n="team.register.p"></p>
+      </div>
+
+      <div class="field f4">
+        <label for="partnerInput" data-i18n="team.partner.label"></label>
+        <input type="text" id="partnerInput"
+          data-i18n-placeholder="team.partner.ph"
+          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+          oninput="validatePartner()" />
+        <div class="field-hint" id="partnerHint" data-i18n="team.partner.hint"></div>
+      </div>
+
+      <div class="field f4">
+        <label for="teamnameInput" data-i18n="team.teamname.label"></label>
+        <input type="text" id="teamnameInput"
+          data-i18n-placeholder="team.teamname.ph"
+          autocomplete="off" spellcheck="false"
+          oninput="validateTeamname()" />
+        <div class="field-hint" id="teamnameHint" data-i18n="team.teamname.hint"></div>
+      </div>
+
+      <div id="teamErr" class="alert alert-err hidden"></div>
+      <button class="btn f5" id="registerBtn" onclick="registerTeam()" data-i18n="team.register.btn"></button>
+    </div>
+
+    <div id="successSection" class="hidden">
+      <div class="alert alert-ok f1" data-i18n="team.success.alert"></div>
+
+      <div class="card c-gold f2" data-i18n-tag="team.success.tag">
+        <h3 id="successTeamName" style="color:var(--gold);font-size:1.3rem;"></h3>
+        <table style="width:100%;font-size:.75rem;border-collapse:collapse;margin-top:.5rem;">
+          <tr>
+            <td style="color:var(--muted);padding:.3rem 0;width:38%;" data-i18n="team.success.you"></td>
+            <td id="sHandle" style="color:var(--text);font-family:var(--mono);"></td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted);padding:.3rem 0;" data-i18n="team.success.partner"></td>
+            <td id="sPartner" style="color:var(--text);font-family:var(--mono);"></td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted);padding:.3rem 0;" data-i18n="team.success.role"></td>
+            <td id="sRole" style="color:var(--text);"></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="card f3" data-i18n-tag="team.next.tag">
+        <h3 data-i18n="team.next.h3"></h3>
+        <p data-i18n="team.next.p"></p>
+      </div>
+
+      <a href="https://share.google/J2fruJExUS1heH3Sg" target="_blank" class="map-btn f4" data-i18n="maps.kaktus"></a>
+      <a href="kaktus.html" class="btn btn-gold f4" data-i18n="team.kaktus.btn"></a>
+    </div>
+  </div>
+
+  <div class="foot" data-i18n="foot.team"></div>
+</div>
+
+<script src="game.js"></script>
+<script>
+  const handle = G.get(G.K.HANDLE);
+  const role   = G.get(G.K.ROLE);
+
+  G.initLangToggle();
+
+  if (!handle || !role) {
+    document.getElementById('gateWarn').classList.remove('hidden');
+  } else {
+    document.getElementById('mainContent').classList.remove('hidden');
+    init();
+  }
+
+  function init() {
+    document.getElementById('rolePillWrap').innerHTML =
+      `<div class="role-pill ${role.toLowerCase()}">${G.t(role==='A'?'role.a.label':'role.b.label')}</div>`;
+    document.getElementById('commentText').textContent = G.t(role==='A'?'team.comment.a':'team.comment.b');
+    document.getElementById('igPostBtn').href = role==='A' ? G.IG_POST_A : G.IG_POST_B;
+    if (G.get(G.K.PARTNER) && G.get(G.K.TEAMNAME)) showSuccess();
+  }
+
+  let partnerValid = false, teamnameValid = false;
+
+  function validatePartner() {
+    const raw  = document.getElementById('partnerInput').value;
+    const hint = document.getElementById('partnerHint');
+    const inp  = document.getElementById('partnerInput');
+    const clean = G.cleanHandle(raw);
+    if (!raw) { hint.textContent=G.t('team.partner.hint'); hint.className='field-hint'; inp.className=''; partnerValid=false; return; }
+    if (clean===handle) { hint.textContent=G.t('team.partner.self'); hint.className='field-hint err'; inp.className='err'; partnerValid=false; return; }
+    if (G.validHandle(raw)) {
+      hint.textContent='✓ @'+clean; hint.className='field-hint ok'; inp.className='ok'; partnerValid=true;
+    } else {
+      hint.textContent=G.t('team.partner.err'); hint.className='field-hint err'; inp.className='err'; partnerValid=false;
+    }
+  }
+
+  function validateTeamname() {
+    const val  = document.getElementById('teamnameInput').value.trim();
+    const hint = document.getElementById('teamnameHint');
+    const inp  = document.getElementById('teamnameInput');
+    if (!val) { hint.textContent=G.t('team.teamname.hint'); hint.className='field-hint'; inp.className=''; teamnameValid=false; return; }
+    if (val.length>=2) { hint.textContent=G.t('team.teamname.ok'); hint.className='field-hint ok'; inp.className='ok'; teamnameValid=true; }
+    else { hint.textContent=G.t('team.teamname.short'); hint.className='field-hint err'; inp.className='err'; teamnameValid=false; }
+  }
+
+  function registerTeam() {
+    const err = document.getElementById('teamErr');
+    err.classList.add('hidden');
+    if (!partnerValid)  { err.textContent=G.t('team.err.partner');  err.classList.remove('hidden'); return; }
+    if (!teamnameValid) { err.textContent=G.t('team.err.teamname'); err.classList.remove('hidden'); return; }
+    const partner  = G.cleanHandle(document.getElementById('partnerInput').value);
+    const teamname = document.getElementById('teamnameInput').value.trim();
+    G.set(G.K.PARTNER, partner);
+    G.set(G.K.TEAMNAME, teamname);
+    G.postForm('TEAM', {
+      [G.FORMS.TEAM.PLAYER]:G.get(G.K.HANDLE), [G.FORMS.TEAM.PARTNER]:partner,
+      [G.FORMS.TEAM.TEAMNAME]:teamname, [G.FORMS.TEAM.ROLE]:role, [G.FORMS.TEAM.TIMESTAMP]:G.now(),
+    });
+    showSuccess();
+  }
+
+  function showSuccess() {
+    document.getElementById('igSection').classList.add('hidden');
+    document.getElementById('successSection').classList.remove('hidden');
+    const partner  = G.get(G.K.PARTNER);
+    const teamname = G.get(G.K.TEAMNAME);
+    document.getElementById('successTeamName').textContent = '🤝 ' + teamname;
+    document.getElementById('sHandle').textContent  = '@' + handle;
+    document.getElementById('sPartner').textContent = '@' + partner;
+    document.getElementById('sRole').textContent    = G.t(role==='A'?'role.a.full':'role.b.full');
+  }
+</script>
+</body>
+</html>

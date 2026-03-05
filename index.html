@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LOCALI — Bielefeld Quest</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+  <div class="topbar f1">
+    <div class="logo">LOC<span>A</span>LI</div>
+    <button class="lang-toggle" title="Switch language">DE</button>
+  </div>
+  <div class="progress f2">
+    <div class="dot-step active"></div>
+    <div class="dot-step"></div><div class="dot-step"></div>
+    <div class="dot-step"></div><div class="dot-step"></div>
+  </div>
+  <div class="hero f2">
+    <div class="hero-label" data-i18n="index.hero.label"></div>
+    <h1 data-i18n="index.hero.h1"></h1>
+    <p data-i18n="index.hero.p"></p>
+  </div>
+
+  <div class="card c-gold f3" data-i18n-tag="index.rewards.tag">
+    <h3 data-i18n="index.rewards.h3"></h3>
+    <ul>
+      <li data-i18n="index.rewards.li1"></li>
+      <li data-i18n="index.rewards.li2"></li>
+      <li data-i18n="index.rewards.li3"></li>
+    </ul>
+  </div>
+
+  <div class="card f3" data-i18n-tag="index.how.tag">
+    <h3 data-i18n="index.how.h3"></h3>
+    <ul>
+      <li data-i18n="index.how.li1"></li>
+      <li data-i18n="index.how.li2"></li>
+      <li data-i18n="index.how.li3"></li>
+      <li data-i18n="index.how.li4"></li>
+      <li data-i18n="index.how.li5"></li>
+      <li data-i18n="index.how.li6"></li>
+      <li data-i18n="index.how.li7"></li>
+    </ul>
+  </div>
+
+  <div class="card c-red f4" data-i18n-tag="index.rules.tag">
+    <h3 data-i18n="index.rules.h3"></h3>
+    <ul>
+      <li data-i18n="index.rules.li1"></li>
+      <li data-i18n="index.rules.li2"></li>
+      <li data-i18n="index.rules.li3"></li>
+      <li data-i18n="index.rules.li4"></li>
+      <li data-i18n="index.rules.li5"></li>
+      <li data-i18n="index.rules.li6"></li>
+    </ul>
+  </div>
+
+  <div class="card c-gold f4" data-i18n-tag="index.timeline.tag">
+    <h3 data-i18n="index.timeline.h3"></h3>
+    <ul>
+      <li data-i18n="index.timeline.li1"></li>
+      <li data-i18n="index.timeline.li2"></li>
+      <li data-i18n="index.timeline.li3"></li>
+    </ul>
+  </div>
+
+  <div class="spacer"></div>
+  <button class="btn f5" id="ctaBtn"></button>
+  <div class="foot f6">LOCALI 2.0 · Bielefeld · 06–11 March 2026</div>
+</div>
+<script src="game.js"></script>
+<script>
+  G.initLangToggle();
+  const btn = document.getElementById('ctaBtn');
+  btn.textContent = G.t('index.cta');
+  btn.onclick = () => { G.clearAll(); window.location.href = 'role.html'; };
+</script>
+</body>
+</html>

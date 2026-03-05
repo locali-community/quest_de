@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LOCALI — You're In</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+  <div class="topbar f1">
+    <div class="logo">LOC<span>A</span>LI</div>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <span class="step-tag" data-i18n="step.tag.registered"></span>
+      <button class="lang-toggle" title="Switch language">DE</button>
+    </div>
+  </div>
+  <div class="progress f2">
+    <div class="dot-step done"></div><div class="dot-step done"></div>
+    <div class="dot-step done"></div><div class="dot-step done"></div>
+    <div class="dot-step active"></div>
+  </div>
+
+  <div id="rolePillWrap" class="f1"></div>
+
+  <div class="f2" style="text-align:center;padding:2rem 0 1.5rem;border:1px solid var(--line2);background:var(--surf);margin-bottom:.8rem;">
+    <div id="cdLabel" style="font-size:.52rem;letter-spacing:.35em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;" data-i18n="waiting.cd.label"></div>
+    <div id="countdown" style="font-family:var(--syne);font-size:3rem;font-weight:800;color:var(--red);line-height:1;letter-spacing:-0.03em;">--:--:--</div>
+    <div id="cdSub" style="font-size:.6rem;letter-spacing:.2em;color:var(--muted);margin-top:.65rem;" data-i18n="waiting.cd.sub"></div>
+  </div>
+
+  <div class="card c-red f3" data-i18n-tag="waiting.ig.tag">
+    <h3 data-i18n="waiting.ig.h3"></h3>
+    <p data-i18n="waiting.ig.p"></p>
+    <ul style="margin-top:.5rem;">
+      <li data-i18n="waiting.ig.li1"></li>
+      <li data-i18n="waiting.ig.li2"></li>
+    </ul>
+    <p style="margin-top:.6rem;" data-i18n="waiting.ig.p2"></p>
+  </div>
+
+  <div class="card f3" data-i18n-tag="waiting.stops.tag">
+    <h3 data-i18n="waiting.stops.h3"></h3>
+    <ul>
+      <li data-i18n="waiting.stops.li1"></li>
+      <li data-i18n="waiting.stops.li2"></li>
+      <li data-i18n="waiting.stops.li3"></li>
+      <li data-i18n="waiting.stops.li4"></li>
+      <li data-i18n="waiting.stops.li5"></li>
+    </ul>
+  </div>
+
+  <div class="card c-gold f4" data-i18n-tag="waiting.kaktus.tag">
+    <h3 data-i18n="waiting.kaktus.h3"></h3>
+    <p data-i18n="waiting.kaktus.p"></p>
+    <a href="kaktus.html" class="btn btn-ghost" style="margin-top:.75rem;display:inline-block;width:auto;padding:.45rem 1rem;font-size:.75rem;" data-i18n="waiting.kaktus.btn"></a>
+  </div>
+
+  <div class="card f4" data-i18n-tag="waiting.reg.tag">
+    <h3 id="teamName" style="color:var(--gold);"></h3>
+    <table style="width:100%;font-size:.75rem;border-collapse:collapse;margin-top:.4rem;">
+      <tr><td style="color:var(--muted);padding:.3rem 0;width:42%;" data-i18n="waiting.reg.you"></td><td id="sHandle" style="font-family:var(--mono);"></td></tr>
+      <tr><td style="color:var(--muted);padding:.3rem 0;" data-i18n="waiting.reg.partner"></td><td id="sPartner" style="font-family:var(--mono);"></td></tr>
+      <tr><td style="color:var(--muted);padding:.3rem 0;" data-i18n="waiting.reg.role"></td><td id="sRole"></td></tr>
+      <tr><td style="color:var(--muted);padding:.3rem 0;" data-i18n="waiting.reg.kaktus"></td><td id="sKaktus"></td></tr>
+    </table>
+  </div>
+
+  <a id="igBtn" href="#" target="_blank" class="btn btn-ghost f5" data-i18n="waiting.ig.btn"></a>
+  <div class="alert alert-info f5" style="margin-top:.25rem;" data-i18n="waiting.saved"></div>
+  <div class="foot f6" data-i18n="foot.waiting"></div>
+</div>
+
+<script src="game.js"></script>
+<script>
+  const handle = G.get(G.K.HANDLE), role = G.get(G.K.ROLE);
+  const partner = G.get(G.K.PARTNER), teamname = G.get(G.K.TEAMNAME);
+
+  G.initLangToggle();
+
+  if (role) document.getElementById('rolePillWrap').innerHTML =
+    `<div class="role-pill ${role.toLowerCase()}">${G.t(role==='A'?'role.a.label':'role.b.label')}</div>`;
+
+  document.getElementById('teamName').textContent  = teamname ? '🤝 '+teamname : G.t('waiting.noreg');
+  document.getElementById('sHandle').textContent   = handle  ? '@'+handle  : '—';
+  document.getElementById('sPartner').textContent  = partner ? '@'+partner : '—';
+  document.getElementById('sRole').textContent     = role==='A'?G.t('role.a.full'):role==='B'?G.t('role.b.full'):'—';
+
+  const kd = G.get(G.K.KAKTUS_DONE)==='yes';
+  document.getElementById('sKaktus').textContent = kd ? G.t('waiting.kaktus.done') : G.t('waiting.kaktus.not');
+  document.getElementById('sKaktus').style.color = kd ? 'var(--green)' : 'var(--muted)';
+  document.getElementById('igBtn').href          = G.IG_PROFILE;
+
+  (function tick() {
+    const now = new Date();
+    if (G.isHuntLive()) {
+      document.getElementById('countdown').textContent = G.t('waiting.cd.live');
+      document.getElementById('countdown').style.color = 'var(--green)';
+      document.getElementById('cdLabel').textContent = G.t('waiting.cd.live.sub');
+      return;
+    }
+    if (G.isHuntOver()) { document.getElementById('countdown').textContent = G.t('waiting.cd.ended'); return; }
+    const diff = G.HUNT_START - now;
+    const d=Math.floor(diff/86400000), h=Math.floor((diff%86400000)/3600000),
+          m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
+    document.getElementById('countdown').textContent = d>0
+      ? `${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+      : `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    setTimeout(tick, 1000);
+  })();
+</script>
+</body>
+</html>

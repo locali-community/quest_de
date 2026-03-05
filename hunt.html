@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LOCALI — The Hunt</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+  <div class="topbar f1">
+    <div class="logo">LOC<span>A</span>LI</div>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <span class="step-tag" data-i18n="step.tag.hunt"></span>
+      <button class="lang-toggle" title="Switch language">DE</button>
+    </div>
+  </div>
+  <div id="rolePillWrap" class="f1"></div>
+
+  <!-- Gate -->
+  <div id="gateWarn" class="hidden">
+    <div class="alert alert-err f2">
+      <span data-i18n="hunt.gate.err"></span>
+      <a href="index.html" style="color:var(--red);display:block;margin-top:.35rem;" data-i18n="hunt.gate.link"></a>
+    </div>
+  </div>
+
+  <!-- Pre-hunt -->
+  <div id="preHunt" class="hidden">
+    <div class="hero f2">
+      <div class="hero-label" data-i18n="hunt.pre.label"></div>
+      <h1 data-i18n="hunt.pre.h1"></h1>
+      <p data-i18n="hunt.pre.p"></p>
+    </div>
+    <div style="text-align:center;padding:1.75rem 0;border:1px solid var(--line2);background:var(--surf);margin-bottom:.8rem;" class="f3">
+      <div style="font-size:.52rem;letter-spacing:.35em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem;" data-i18n="hunt.pre.cd.label"></div>
+      <div id="preCountdown" style="font-family:var(--syne);font-size:2.6rem;font-weight:800;color:var(--red);line-height:1;">--:--:--</div>
+    </div>
+    <a id="igLinkPre" href="#" target="_blank" class="btn btn-ghost f4" data-i18n="hunt.pre.ig.btn"></a>
+    <a href="waiting.html" class="btn btn-ghost f4" data-i18n="nav.back.waiting"></a>
+  </div>
+
+  <!-- Hunt over -->
+  <div id="huntOver" class="hidden">
+    <div class="hero f2">
+      <div class="hero-label" data-i18n="hunt.over.label"></div>
+      <h1 data-i18n="hunt.over.h1"></h1>
+      <p data-i18n="hunt.over.p"></p>
+    </div>
+  </div>
+
+  <!-- Active Hunt -->
+  <div id="activeHunt" class="hidden">
+
+    <!-- No stops yet -->
+    <div id="stateNoStops" class="hidden">
+      <div class="hero f2">
+        <div class="hero-label" data-i18n="hunt.nostops.label"></div>
+        <h1 data-i18n="hunt.nostops.h1"></h1>
+        <p data-i18n="hunt.nostops.p"></p>
+      </div>
+      <div class="card c-red f3" data-i18n-tag="hunt.nostops.card.tag">
+        <h3 id="igRolePrompt"></h3>
+        <p style="font-size:.75rem;color:var(--muted2);margin-top:.3rem;" data-i18n="hunt.nostops.card.p"></p>
+      </div>
+      <a id="igPostBtn" href="#" target="_blank" class="btn f4" data-i18n="hunt.nostops.ig.btn"></a>
+    </div>
+
+    <!-- In progress -->
+    <div id="stateInProgress" class="hidden">
+      <div class="hero f2">
+        <div class="hero-label" id="progressLabel"></div>
+        <h1 data-i18n="hunt.progress.h1"></h1>
+        <p id="progressSub"></p>
+      </div>
+
+      <div class="card f3" data-i18n-tag="hunt.progress.frags.tag">
+        <h3 data-i18n="hunt.progress.frags.h3"></h3>
+        <div id="progressFrags" style="margin-top:.4rem;"></div>
+        <p style="font-size:.65rem;color:var(--muted);margin-top:.6rem;" data-i18n="hunt.progress.frags.note"></p>
+      </div>
+
+      <div class="card c-red f3" data-i18n-tag="hunt.progress.next.tag">
+        <h3 data-i18n="hunt.progress.next.h3"></h3>
+        <p id="nextClueText" style="margin-top:.4rem;font-size:.8rem;line-height:1.9;color:var(--muted2);"></p>
+        <a id="nextStopBtn" href="#" class="btn" style="margin-top:.85rem;font-size:.85rem;">
+          <span data-i18n="hunt.progress.next.btn"></span> <span id="nextStopNumLabel"></span> →
+        </a>
+      </div>
+    </div>
+
+    <!-- Decoder -->
+    <div id="stateDecoder" class="hidden">
+      <div class="hero f2">
+        <div class="hero-label" data-i18n="hunt.decoder.label"></div>
+        <h1 data-i18n="hunt.decoder.h1"></h1>
+        <p data-i18n="hunt.decoder.p"></p>
+      </div>
+
+      <div class="card f3" data-i18n-tag="hunt.decoder.own.tag">
+        <h3 data-i18n="hunt.decoder.own.h3"></h3>
+        <div id="decoderMyFrags" style="margin-top:.4rem;"></div>
+        <p style="font-size:.65rem;color:var(--muted);margin-top:.55rem;" data-i18n="hunt.decoder.own.p"></p>
+      </div>
+
+      <div class="card c-gold f4" data-i18n-tag="hunt.decoder.box.tag">
+        <h3 data-i18n="hunt.decoder.box.h3"></h3>
+        <p style="font-size:.72rem;color:var(--muted2);margin-bottom:.9rem;line-height:1.85;" data-i18n="hunt.decoder.box.p"></p>
+
+        <div class="field">
+          <label for="boxA" data-i18n="hunt.decoder.box.a.label"></label>
+          <input type="text" id="boxA"
+            data-i18n-placeholder="hunt.decoder.box.ph"
+            autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+            oninput="onBoxInput('A')" />
+          <div class="field-hint" id="hintA" data-i18n="hunt.decoder.hint.a"></div>
+        </div>
+
+        <div class="field" style="margin-top:.35rem;">
+          <label for="boxB" data-i18n="hunt.decoder.box.b.label"></label>
+          <input type="text" id="boxB"
+            data-i18n-placeholder="hunt.decoder.box.ph"
+            autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+            oninput="onBoxInput('B')" />
+          <div class="field-hint" id="hintB" data-i18n="hunt.decoder.hint.b"></div>
+        </div>
+
+        <div id="decodeErr" class="alert alert-err hidden" style="margin:.65rem 0 .4rem;"></div>
+        <button class="btn btn-gold" style="margin-top:.3rem;" onclick="attemptDecode()" data-i18n="hunt.decoder.btn"></button>
+      </div>
+
+      <!-- Reveal section -->
+      <div id="revealSection" class="hidden">
+        <div class="divider f1" data-i18n="hunt.reveal.divider"></div>
+        <div id="revealSteps"></div>
+
+        <div id="finalBlock" class="hidden">
+          <div class="card c-gold f1" style="margin-top:.8rem;" data-i18n-tag="hunt.final.tag">
+            <h3 style="color:var(--gold);margin-bottom:.6rem;" data-i18n="hunt.final.h3"></h3>
+            <div style="font-family:var(--syne);font-size:1.25rem;font-weight:800;line-height:1.45;letter-spacing:.02em;">
+              Indieflavours Bielefeld<br>
+              <span style="color:var(--gold);">Mauerstraße 52, 33602 Bielefeld</span>
+            </div>
+            <a href="https://maps.google.com/?q=Indieflavours+Bielefeld+Mauerstrase+52" target="_blank" class="map-btn" style="margin-top:.7rem;" data-i18n="maps.indie"></a>
+          </div>
+
+          <div class="card f2" data-i18n-tag="hunt.final.sticker.tag">
+            <h3 data-i18n="hunt.final.sticker.h3"></h3>
+            <p style="margin-bottom:.75rem;" data-i18n="hunt.final.sticker.p"></p>
+            <div class="field" style="margin-bottom:.5rem;">
+              <label for="finalCode" data-i18n="hunt.final.code.label"></label>
+              <input type="text" id="finalCode"
+                data-i18n-placeholder="hunt.final.code.ph"
+                autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
+            </div>
+            <div id="finalErr" class="alert alert-err hidden"></div>
+            <button class="btn btn-gold" onclick="submitFinalCode()" data-i18n="hunt.final.code.btn"></button>
+          </div>
+        </div>
+      </div>
+    </div><!-- /stateDecoder -->
+
+    <!-- Checking -->
+    <div id="checkingWinner" class="hidden">
+      <div style="text-align:center;padding:3rem 0;">
+        <div style="font-size:2rem;animation:bob .85s ease infinite alternate;">⏳</div>
+        <div style="font-family:var(--syne);font-size:1.1rem;font-weight:700;margin-top:1rem;color:var(--muted2);" data-i18n="hunt.checking.title"></div>
+        <div style="font-size:.65rem;color:var(--muted);margin-top:.4rem;" data-i18n="hunt.checking.sub"></div>
+      </div>
+    </div>
+
+    <!-- Grand prize win -->
+    <div id="winSection" class="hidden">
+      <div class="win-hero f1">
+        <span class="win-icon">🏆</span>
+        <div class="win-title">You're First!</div>
+        <div class="win-sub" data-i18n="hunt.win.sub"></div>
+      </div>
+      <div class="voucher f2" style="background:radial-gradient(ellipse at center,rgba(232,165,28,.15) 0%,transparent 70%);">
+        <div class="v-lbl" data-i18n="hunt.win.v.lbl1"></div>
+        <div class="v-pct" style="font-size:2.6rem;line-height:1.1;color:var(--gold);">€100</div>
+        <div class="v-lbl" data-i18n="hunt.win.v.lbl2"></div>
+        <div class="v-name">🍛 Indieflavours Bielefeld</div>
+        <div class="v-team">Mauerstraße 52, 33602 Bielefeld</div>
+        <div class="v-team" id="winTeamGrand"></div>
+        <div class="v-once" data-i18n="hunt.win.v.once"></div>
+      </div>
+      <div class="alert alert-ok f3" data-i18n="hunt.win.alert"></div>
+      <div class="card f3" data-i18n-tag="hunt.win.claim.tag">
+        <h3 data-i18n="hunt.win.claim.h3"></h3>
+        <ul>
+          <li data-i18n="hunt.win.claim.li1"></li>
+          <li data-i18n="hunt.win.claim.li2"></li>
+          <li data-i18n="hunt.win.claim.li3"></li>
+          <li data-i18n="hunt.win.claim.li4"></li>
+        </ul>
+      </div>
+      <a href="https://maps.google.com/?q=Indieflavours+Bielefeld+Mauerstrase+52" target="_blank" class="map-btn f4" data-i18n="maps.indie"></a>
+    </div>
+
+    <!-- Finisher (50%) -->
+    <div id="finisherSection" class="hidden">
+      <div class="win-hero f1">
+        <span class="win-icon">🎉</span>
+        <div class="win-title">Quest Complete</div>
+        <div class="win-sub" data-i18n="hunt.finish.sub"></div>
+      </div>
+      <div class="voucher f2">
+        <div class="v-lbl" data-i18n="hunt.finish.v.lbl1"></div>
+        <div class="v-pct" style="font-size:3rem;line-height:1.1;">50% OFF</div>
+        <div class="v-lbl" data-i18n="hunt.finish.v.lbl2"></div>
+        <div class="v-name">🍛 Indieflavours Bielefeld</div>
+        <div class="v-team">Mauerstraße 52, 33602 Bielefeld</div>
+        <div class="v-team" id="winTeamFinisher"></div>
+        <div class="v-once" data-i18n="hunt.finish.v.once"></div>
+      </div>
+      <div class="card c-gold f3" data-i18n-tag="hunt.finish.grand.tag">
+        <h3 data-i18n="hunt.finish.grand.h3"></h3>
+        <p id="grandWinnerLine"></p>
+        <p style="margin-top:.4rem;font-size:.73rem;color:var(--muted2);" data-i18n="hunt.finish.grand.p"></p>
+      </div>
+      <div class="alert alert-ok f3" data-i18n="hunt.finish.alert"></div>
+      <a href="https://maps.google.com/?q=Indieflavours+Bielefeld+Mauerstrase+52" target="_blank" class="map-btn f4" data-i18n="maps.indie"></a>
+    </div>
+
+  </div><!-- /activeHunt -->
+  <div class="foot" data-i18n="foot.hunt"></div>
+</div>
+
+<script src="game.js"></script>
+<script>
+  const handle   = G.get(G.K.HANDLE);
+  const role     = G.get(G.K.ROLE);
+  const teamname = G.get(G.K.TEAMNAME);
+  const partner  = G.get(G.K.PARTNER);
+  const lang     = G.getLang();
+
+  G.initLangToggle();
+
+  if (!handle || !role) {
+    show('gateWarn');
+  } else {
+    document.getElementById('rolePillWrap').innerHTML =
+      `<div class="role-pill ${role.toLowerCase()}">${G.t(role==='A'?'role.a.label':'role.b.label')}</div>`;
+
+    if (G.get(G.K.WON)==='grand' || G.get(G.K.WON)==='finisher') {
+      show('activeHunt'); showWin();
+    } else if (G.isHuntOver() && G.getStops().length===0) {
+      show('huntOver');
+    } else if (G.isHuntLive() || G.getStops().length>0) {
+      show('activeHunt'); routeState();
+    } else {
+      show('preHunt');
+      document.getElementById('igLinkPre').href = role==='A' ? G.IG_POST_A : G.IG_POST_B;
+      countdown('preCountdown', G.HUNT_START);
+    }
+  }
+
+  function show(id) { document.getElementById(id).classList.remove('hidden'); }
+  function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+  function routeState() {
+    const done  = G.getStops();
+    const stops = G.stopsForRole(role);
+
+    if (G.allStopsDone()) {
+      show('stateDecoder');
+      renderDecoderFrags();
+      const myFrags = G.getFragments().join(' ');
+      if (role==='A') {
+        document.getElementById('boxA').value = myFrags;
+        setHint('A','ok', G.t('hunt.decoder.prefill'));
+      } else {
+        document.getElementById('boxB').value = myFrags;
+        setHint('B','ok', G.t('hunt.decoder.prefill'));
+      }
+      return;
+    }
+
+    if (done.length===0) {
+      show('stateNoStops');
+      document.getElementById('igRolePrompt').textContent = G.t(role==='A'?'hunt.nostops.prompt.a':'hunt.nostops.prompt.b');
+      document.getElementById('igPostBtn').href = role==='A' ? G.IG_POST_A : G.IG_POST_B;
+    } else {
+      show('stateInProgress');
+      renderProgress(done, stops);
+    }
+  }
+
+  function renderProgress(done, stops) {
+    const doneCount = done.length;
+    const total     = stops.length;
+    const clr       = role==='A' ? 'var(--blue)' : 'var(--gold)';
+    const fragLabel = G.t('hunt.fragment.label');
+    const stopLabel = G.t('hunt.progress.stop.label');
+
+    document.getElementById('progressLabel').textContent = `${stopLabel} ${doneCount} / ${total}`;
+    document.getElementById('progressSub').textContent   =
+      `${doneCount} ${fragLabel.toLowerCase()}${doneCount>1?'s':''} · ${total-doneCount} ${stopLabel.toLowerCase()}${total-doneCount>1?'s':''} remaining`;
+
+    const el = document.getElementById('progressFrags');
+    done.forEach((id,i) => {
+      const stop = stops.find(s=>s.id===id);
+      if (!stop) return;
+      el.innerHTML += `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--line);font-size:.75rem;">
+          <span style="color:var(--muted);">${fragLabel} ${i+1}</span>
+          <strong style="font-family:var(--syne);font-size:1.15rem;letter-spacing:.1em;color:${clr};">${stop.fragment}</strong>
+        </div>`;
+    });
+
+    const lastStop = stops.find(s=>s.id===done[done.length-1]);
+    if (lastStop && lastStop.next_clue && lastStop.next_url) {
+      const clueText = (lastStop.next_clue[lang] || lastStop.next_clue.en || lastStop.next_clue);
+      document.getElementById('nextClueText').textContent   = clueText;
+      document.getElementById('nextStopBtn').href           = lastStop.next_url;
+      document.getElementById('nextStopNumLabel').textContent = doneCount + 1;
+      const btn = document.getElementById('nextStopBtn');
+      btn.className = 'btn ' + (role==='A'?'btn-blue':'btn-gold');
+      btn.style.cssText += 'margin-top:.85rem;font-size:.85rem;';
+    }
+  }
+
+  function renderDecoderFrags() {
+    const frags = G.getFragments();
+    const clr   = role==='A' ? 'var(--blue)' : 'var(--gold)';
+    const el    = document.getElementById('decoderMyFrags');
+    const fragLabel = G.t('hunt.fragment.label');
+    frags.forEach((f,i) => {
+      el.innerHTML += `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--line);font-size:.75rem;">
+          <span style="color:var(--muted);">${fragLabel} ${i+1}</span>
+          <strong style="font-family:var(--syne);font-size:1.2rem;letter-spacing:.12em;color:${clr};">${f}</strong>
+        </div>`;
+    });
+  }
+
+  function setHint(box, state, msg) {
+    const el = document.getElementById('hint'+box);
+    el.textContent = msg;
+    el.className   = 'field-hint' + (state ? ' '+state : '');
+    document.getElementById('box'+box).className = state==='err'?'err':state==='ok'?'ok':'';
+  }
+
+  function onBoxInput(box) {
+    setHint(box, '', G.t('hunt.decoder.hint.'+box.toLowerCase()));
+    document.getElementById('decodeErr').classList.add('hidden');
+  }
+
+  function attemptDecode() {
+    const rawA = document.getElementById('boxA').value;
+    const rawB = document.getElementById('boxB').value;
+    const err  = document.getElementById('decodeErr');
+
+    const normA = G.norm(rawA), normB = G.norm(rawB);
+    const okA = normA === G.DECODER.ANSWER_A;
+    const okB = normB === G.DECODER.ANSWER_B;
+
+    setHint('A', okA?'ok':'err', G.t(okA?'hunt.decoder.hint.ok':'hunt.decoder.hint.err'));
+    setHint('B', okB?'ok':'err', G.t(okB?'hunt.decoder.hint.ok':'hunt.decoder.hint.err'));
+
+    if (!okA || !okB) {
+      err.textContent = !okA && !okB ? G.t('hunt.decoder.err.both')
+        : !okA ? G.t('hunt.decoder.err.a') : G.t('hunt.decoder.err.b');
+      err.classList.remove('hidden');
+      return;
+    }
+
+    err.classList.add('hidden');
+    document.getElementById('stateDecoder').querySelector('.card.c-gold').classList.add('hidden');
+    show('revealSection');
+
+    const stepsEl = document.getElementById('revealSteps');
+    G.DECODER.STEPS.forEach((step,i) => {
+      setTimeout(() => {
+        const stepLabel = (step.label[lang] || step.label.en || step.label);
+        const d = document.createElement('div');
+        d.className = 'card f1';
+        d.style.cssText = 'margin-bottom:.7rem;border-left:3px solid var(--red);opacity:0;transition:opacity .6s ease;';
+        d.innerHTML = `
+          <div style="font-size:.49rem;letter-spacing:.32em;text-transform:uppercase;color:var(--red);margin-bottom:.3rem;">${stepLabel}</div>
+          <div style="font-size:.82rem;line-height:1.9;color:var(--muted2);">${step.html}</div>`;
+        stepsEl.appendChild(d);
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{ d.style.opacity='1'; }));
+        d.scrollIntoView({behavior:'smooth',block:'end'});
+        if (i===G.DECODER.STEPS.length-1) {
+          setTimeout(()=>{ show('finalBlock'); document.getElementById('finalBlock').scrollIntoView({behavior:'smooth'}); }, 900);
+        }
+      }, step.delay);
+    });
+  }
+
+  // ── JSONBin config ───────────────────────────────────────────
+  const JSONBIN_ID  = '69a94e5fae596e708f617fee';
+  const JSONBIN_KEY = '$2a$10$wxAJU1o8bby3pFj9bimiB.0hRadtSUKsXHUVzW1186kD0RuTkFHmu';
+  const BIN_URL     = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
+  const BIN_HEADERS = { 'X-Master-Key': JSONBIN_KEY, 'Content-Type': 'application/json' };
+
+  function submitFinalCode() {
+    const val = document.getElementById('finalCode').value.trim().toUpperCase().replace(/\s/g,'');
+    const err = document.getElementById('finalErr');
+    if (val !== G.INDIE_CODE.toUpperCase()) {
+      err.textContent = G.t('hunt.final.code.err');
+      err.classList.remove('hidden');
+      document.getElementById('finalCode').className = 'err';
+      setTimeout(()=>{ document.getElementById('finalCode').className=''; }, 1800);
+      return;
+    }
+    err.classList.add('hidden');
+    hide('stateDecoder'); show('checkingWinner');
+
+    fetch(BIN_URL+'/latest', {headers:{'X-Master-Key':JSONBIN_KEY}})
+      .then(r=>r.json())
+      .then(data => {
+        const state = data.record;
+        if (state.winner_locked===true || state.winner_locked==='true') {
+          G.set(G.K.WON,'finisher');
+          G.postForm('WINNER',{[G.FORMS.WINNER.PLAYER]:handle,[G.FORMS.WINNER.PARTNER]:partner||'',[G.FORMS.WINNER.TEAMNAME]:teamname||'',[G.FORMS.WINNER.TIMESTAMP]:G.now()});
+          hide('checkingWinner'); showFinisher(state.team);
+        } else {
+          const winnerData = {winner_locked:true,team:teamname||handle,handle,partner:partner||'',timestamp:G.now()};
+          fetch(BIN_URL,{method:'PUT',headers:BIN_HEADERS,body:JSON.stringify(winnerData)})
+            .then(()=>{
+              G.set(G.K.WON,'grand');
+              G.postForm('WINNER',{[G.FORMS.WINNER.PLAYER]:handle,[G.FORMS.WINNER.PARTNER]:partner||'',[G.FORMS.WINNER.TEAMNAME]:teamname||'',[G.FORMS.WINNER.TIMESTAMP]:G.now()});
+              hide('checkingWinner'); showGrandWinner();
+            })
+            .catch(()=>{ hide('checkingWinner'); showFinisher('unknown'); });
+        }
+      })
+      .catch(()=>{ G.set(G.K.WON,'finisher'); hide('checkingWinner'); showFinisher(''); });
+  }
+
+  function showGrandWinner() {
+    show('winSection');
+    document.getElementById('winTeamGrand').textContent = (teamname?'Team: '+teamname+' · ':'')+'@'+handle;
+  }
+
+  function showFinisher(winnerTeamName) {
+    show('finisherSection');
+    document.getElementById('winTeamFinisher').textContent = (teamname?'Team: '+teamname+' · ':'')+'@'+handle;
+    const line = document.getElementById('grandWinnerLine');
+    line.innerHTML = G.t('hunt.finish.grand.pre') + '<strong style="color:var(--gold);">' + (winnerTeamName||'another team') + '</strong>';
+  }
+
+  function showWin() {
+    const wonState = G.get(G.K.WON);
+    if (wonState==='grand') { showGrandWinner(); }
+    else {
+      fetch(BIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_KEY}})
+        .then(r=>r.json()).then(data=>showFinisher(data.record.team)).catch(()=>showFinisher(''));
+    }
+  }
+
+  function countdown(elId, target) {
+    (function tick() {
+      const diff = target - new Date();
+      if (diff<=0) { location.reload(); return; }
+      const d=Math.floor(diff/86400000), h=Math.floor((diff%86400000)/3600000),
+            m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
+      document.getElementById(elId).textContent = d>0
+        ? `${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+        : `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      setTimeout(tick,1000);
+    })();
+  }
+</script>
+</body>
+</html>
