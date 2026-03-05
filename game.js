@@ -99,7 +99,11 @@ const G = {
 
   set(k,v)   { localStorage.setItem(k,String(v)); },
   get(k)     { return localStorage.getItem(k); },
-  clearAll() { Object.values(this.K).forEach(k=>localStorage.removeItem(k)); },
+  clearAll() {
+    const savedLang = this.get(this.K.LANG); // preserve language across game reset
+    Object.values(this.K).forEach(k=>localStorage.removeItem(k));
+    if (savedLang) this.set(this.K.LANG, savedLang);
+  },
 
   getStops() { try { return JSON.parse(this.get(this.K.STOPS_DONE)||'[]'); } catch { return []; } },
   addStop(id) { const d=this.getStops(); if(!d.includes(id)){d.push(id);this.set(this.K.STOPS_DONE,JSON.stringify(d));} },
@@ -144,8 +148,11 @@ const G = {
       if(val!==undefined)el.setAttribute('placeholder',val);
     });
     document.querySelectorAll('.lang-toggle').forEach(btn=>{
-      btn.textContent=lang==='en'?'DE':'EN';
-      btn.title=lang==='en'?'Auf Deutsch wechseln':'Switch to English';
+      btn.innerHTML = lang==='en'
+        ? '<span class="lang-flag">🇬🇧</span><span class="lang-cur">EN</span><span class="lang-sep">›</span><span class="lang-next">DE</span>'
+        : '<span class="lang-flag">🇩🇪</span><span class="lang-cur">DE</span><span class="lang-sep">›</span><span class="lang-next">EN</span>';
+      btn.title = lang==='en' ? 'Auf Deutsch wechseln' : 'Switch to English';
+      btn.setAttribute('aria-label', btn.title);
     });
     document.documentElement.lang=lang;
   },

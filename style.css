@@ -401,16 +401,26 @@ body::before {
 
 /* ── Language toggle ──────────────────────────────────────── */
 .lang-toggle {
-  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  background: var(--surf2);
   border: 1px solid var(--line2);
-  color: var(--muted2);
+  color: var(--text);
   font-family: var(--mono);
   font-size: 0.58rem;
-  letter-spacing: 0.2em;
-  padding: 0.2rem 0.55rem;
+  letter-spacing: 0.12em;
+  padding: 0.28rem 0.6rem;
   cursor: pointer;
-  transition: border-color 0.18s, color 0.18s;
+  transition: border-color 0.18s, background 0.18s;
   -webkit-tap-highlight-color: transparent;
   line-height: 1;
+  white-space: nowrap;
+  min-height: 1.8rem;
 }
-.lang-toggle:hover { border-color: var(--red); color: var(--text); }
+.lang-toggle:hover  { border-color: var(--red); background: var(--surf); }
+.lang-toggle:active { transform: scale(0.97); }
+.lang-flag { font-size: 0.8rem; line-height: 1; }
+.lang-cur  { font-weight: 600; color: var(--text); }
+.lang-sep  { color: var(--muted); font-size: 0.5rem; }
+.lang-next { color: var(--muted2); }
