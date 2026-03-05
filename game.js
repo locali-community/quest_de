@@ -220,6 +220,9 @@ const I18N = {
   'index.timeline.li2':  { en:'<strong>Sat 07.03, 12:00 →</strong> Instagram post live — first stop links published', de:'<strong>Sa 07.03, 12:00 →</strong> Instagram-Post live — erste Stop-Links veröffentlicht' },
   'index.timeline.li3':  { en:'<strong>Wed 11.03, 23:59 →</strong> Hunt ends — Indieflavours prize expires', de:'<strong>Mi 11.03, 23:59 →</strong> Jagd endet — Indieflavours-Preis verfällt' },
   'index.cta':           { en:"I understand — Let's go →", de:"Verstanden — Los geht's →" },
+  'index.cta.resume':    { en:'Continue Where You Left Off →', de:'Weitermachen wo du aufgehört hast →' },
+  'index.cta.fresh':     { en:'Start Over (clears all progress)', de:'Neu starten (löscht alle Fortschritte)' },
+  'index.cta.fresh.confirm': { en:'This will delete all your saved progress — role, team, stops, everything. Are you sure?', de:'Damit werden alle gespeicherten Fortschritte gelöscht — Rolle, Team, Stops, alles. Bist du sicher?' },
 
   // role
   'role.hero.label':     { en:'Your Identity', de:'Deine Identität' },

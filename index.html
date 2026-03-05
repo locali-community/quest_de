@@ -10,7 +10,7 @@
 <div class="page">
   <div class="topbar f1">
     <div class="logo">LOC<span>A</span>LI</div>
-    <button class="lang-toggle" title="Switch language">DE</button>
+    <button class="lang-toggle" title="Switch language"></button>
   </div>
   <div class="progress f2">
     <div class="dot-step active"></div>
@@ -74,8 +74,45 @@
 <script>
   G.initLangToggle();
   const btn = document.getElementById('ctaBtn');
-  btn.textContent = G.t('index.cta');
-  btn.onclick = () => { G.clearAll(); window.location.href = 'role.html'; };
+
+  // Detect existing progress and route accordingly
+  const savedHandle  = G.get(G.K.HANDLE);
+  const savedRole    = G.get(G.K.ROLE);
+  const savedPartner = G.get(G.K.PARTNER);
+  const savedWon     = G.get(G.K.WON);
+
+  if (savedHandle && savedRole) {
+    // Returning player — figure out where they left off
+    let resumeUrl = 'role.html';
+    if (savedWon)                              resumeUrl = 'hunt.html';
+    else if (G.allStopsDone())                 resumeUrl = 'hunt.html';
+    else if (G.getStops().length > 0)          resumeUrl = 'hunt.html';
+    else if (G.isHuntLive())                   resumeUrl = 'hunt.html';
+    else if (savedPartner)                     resumeUrl = 'waiting.html';
+    else if (G.get(G.K.TEAMNAME))              resumeUrl = 'waiting.html';
+    else                                       resumeUrl = 'team.html';
+
+    // Show a resume prompt instead of the normal CTA
+    btn.textContent = G.t('index.cta.resume');
+    btn.onclick = () => { window.location.href = resumeUrl; };
+
+    // Also add a "start fresh" link below the button
+    const fresh = document.createElement('button');
+    fresh.className = 'btn btn-ghost f5';
+    fresh.style.marginTop = '0';
+    fresh.textContent = G.t('index.cta.fresh');
+    fresh.onclick = () => {
+      if (confirm(G.t('index.cta.fresh.confirm'))) {
+        G.clearAll();
+        window.location.href = 'role.html';
+      }
+    };
+    btn.parentNode.insertBefore(fresh, btn.nextSibling);
+  } else {
+    // Fresh player
+    btn.textContent = G.t('index.cta');
+    btn.onclick = () => { G.clearAll(); window.location.href = 'role.html'; };
+  }
 </script>
 </body>
 </html>
