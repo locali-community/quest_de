@@ -126,7 +126,7 @@ const G = {
   },
 
   // ── Language ───────────────────────────────────────────────
-  getLang()     { return this.get(this.K.LANG)||'en'; },
+  getLang()     { return this.get(this.K.LANG)||'de'; },
   setLang(lang) { this.set(this.K.LANG,lang); },
   t(key)        { return (I18N[key]||{})[this.getLang()]||(I18N[key]||{})['en']||key; },
 
