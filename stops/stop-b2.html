@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LOCALI — Stop B2</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="page">
+  <div class="topbar f1">
+    <div class="logo">LOC<span>A</span>LI</div>
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <span class="step-tag">Stop B2</span>
+      <button class="lang-toggle" title="Switch language">DE</button>
+    </div>
+  </div>
+  <div class="role-pill b f1" data-i18n="role.b.label"></div>
+
+  <div id="noHandle" class="hidden">
+    <div class="card c-red f2" data-i18n-tag="not.registered.title">
+      <h3 data-i18n="not.registered.title"></h3>
+      <p data-i18n="not.registered.body"></p>
+    </div>
+    <a href="../index.html" class="btn f3" data-i18n="nav.back.start"></a>
+  </div>
+
+  <div id="wrongRole" class="hidden">
+    <div class="alert alert-err f2" data-i18n="stop.wrong.b"></div>
+    <a href="../hunt.html" class="btn btn-ghost f3" data-i18n="nav.back.hunt"></a>
+  </div>
+
+  <div id="alreadyDone" class="hidden">
+    <div class="alert alert-ok f2" data-i18n="stop.already.ok"></div>
+    <div class="fragment-display f2">
+      <div class="frag-label" data-i18n="stop.already.frag.label.b2"></div>
+      <div class="frag-value b" id="alreadyFrag"></div>
+      <div class="frag-hint" id="alreadyHint"></div>
+    </div>
+    
+    <div class="card c-red f3" data-i18n-tag="stop.already.next.tag">
+      <h3 data-i18n="stop.already.next.h3"></h3>
+      <p id="alreadyNextClue" style="font-size:.78rem;color:var(--muted2);line-height:1.85;margin-top:.3rem;"></p>
+    </div>
+    <a href="../hunt.html" class="btn f3" style="margin-top:.5rem;" data-i18n="stop.back.hunt"></a>
+  </div>
+
+  <div id="codeEntry" class="hidden">
+    <div class="hero f2">
+      <div class="hero-label" data-i18n="stop.hero.label.2.b"></div>
+      <h1 data-i18n="stop.hero.h1"></h1>
+      <p data-i18n="stop.hero.p"></p>
+    </div>
+
+    <div class="card c-gold f2" data-i18n-tag="stop.dest.tag">
+      <h3 id="coordDisplay" style="font-family:var(--mono);font-size:1.05rem;color:var(--gold);letter-spacing:.04em;"></h3>
+      <a id="mapsLinkEntry" href="#" target="_blank" class="map-btn" style="margin-top:.6rem;" data-i18n="stop.maps.open"></a>
+    </div>
+
+    <div class="alert alert-info f3" data-i18n="stop.sticker.info"></div>
+
+    <div class="field f3">
+      <label for="stickerCode" data-i18n="stop.code.label"></label>
+      <input type="text" id="stickerCode"
+        data-i18n-placeholder="stop.code.ph"
+        autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
+      <div class="field-hint" data-i18n="stop.code.hint"></div>
+    </div>
+    <div id="codeErr" class="alert alert-err hidden"></div>
+    <button class="btn btn-gold f4" onclick="validateCode()" data-i18n="stop.submit"></button>
+  </div>
+
+  <div id="fragReveal" class="hidden">
+    <div class="alert alert-ok f1" data-i18n="stop.accept.2.b"></div>
+
+    <div class="fragment-display f2">
+      <div class="frag-label" data-i18n="stop.frag.label.b2"></div>
+      <div class="frag-value b" id="fragVal"></div>
+      <div class="frag-hint" id="fragHint"></div>
+      <div class="frag-count" data-i18n="stop.frag.count.2"></div>
+    </div>
+
+    <div class="alert alert-info f3" data-i18n="stop.frag.warn"></div>
+    
+    <div class="card c-red f4" data-i18n-tag="stop.next.tag">
+      <h3 data-i18n="stop.next.h3"></h3>
+      <div id="nextClueReveal" class="hidden">
+        <p id="nextClueBody" style="margin-top:.4rem;font-size:.8rem;line-height:1.9;color:var(--muted2);"></p>
+      </div>
+    </div>
+    <button class="btn btn-gold f5" onclick="saveAndContinue()" data-i18n="stop.save.mid"></button>
+  </div>
+
+  <div class="foot">LOCALI 2.0 · Stop B2</div>
+</div>
+
+<script src="../game.js"></script>
+<script>
+  const STOP_ID   = 'b2';
+  const STOP_ROLE = 'B';
+  const handle    = G.get(G.K.HANDLE);
+  const role      = G.get(G.K.ROLE);
+  const lang      = G.getLang();
+
+  G.initLangToggle();
+
+  function show(id) { document.getElementById(id).classList.remove('hidden'); }
+
+  if (!handle) {
+    show('noHandle');
+  } else if (role && role !== STOP_ROLE) {
+    show('wrongRole');
+  } else {
+    if (!role) G.set(G.K.ROLE, STOP_ROLE);
+    const stop = G.STOPS[STOP_ROLE].find(s => s.id === STOP_ID);
+    const done = G.getStops();
+
+    if (done.includes(STOP_ID)) {
+      show('alreadyDone');
+      document.getElementById('alreadyFrag').textContent = stop.fragment;
+      document.getElementById('alreadyHint').textContent = (stop.hint && stop.hint[lang]) || stop.hint || '';
+      const anc = document.getElementById('alreadyNextClue');
+      if (anc && stop.next_clue) anc.textContent = (stop.next_clue[lang] || stop.next_clue.en || stop.next_clue);
+    } else {
+      show('codeEntry');
+      document.getElementById('mapsLinkEntry').href = stop.gmaps;
+    }
+  }
+
+  function validateCode() {
+    const val  = document.getElementById('stickerCode').value.trim().toUpperCase().replace(/\s/g,'');
+    const stop = G.STOPS[STOP_ROLE].find(s => s.id === STOP_ID);
+    const err  = document.getElementById('codeErr');
+    if (val !== stop.sticker_code.toUpperCase()) {
+      err.textContent = G.t('stop.code.err');
+      err.classList.remove('hidden');
+      const inp = document.getElementById('stickerCode');
+      inp.className = 'err';
+      setTimeout(() => { inp.className = ''; }, 1800);
+      return;
+    }
+    err.classList.add('hidden');
+    document.getElementById('codeEntry').classList.add('hidden');
+    document.getElementById('fragVal').textContent  = stop.fragment;
+    document.getElementById('fragHint').textContent = (stop.hint && stop.hint[lang]) || stop.hint || '';
+
+    const nc = document.getElementById('nextClueReveal');
+    if (nc && stop.next_clue) {
+      document.getElementById('nextClueBody').textContent = (stop.next_clue[lang] || stop.next_clue.en || stop.next_clue);
+      nc.classList.remove('hidden');
+    }
+    show('fragReveal');
+  }
+
+  function saveAndContinue() {
+    G.addStop(STOP_ID);
+    const stop = G.STOPS[STOP_ROLE].find(s => s.id === STOP_ID);
+    window.location.href = stop.next_url ? '../' + stop.next_url : '../hunt.html';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key==='Enter' && !document.getElementById('codeEntry').classList.contains('hidden')) validateCode();
+  });
+</script>
+</body>
+</html>
